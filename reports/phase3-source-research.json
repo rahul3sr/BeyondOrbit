@@ -1,0 +1,89 @@
+{
+  "phase": 3,
+  "base_commit": "bb3802290392257d6ac68a91806a0c6d094f4412",
+  "checked_at": "2026-10-28T05:25:29.118142+00:00",
+  "status": "blocked_before_source_download",
+  "selected_asset": null,
+  "finished_short": null,
+  "blocked_primary_sources": [
+    {
+      "name": "NASA media library",
+      "url": "https://images.nasa.gov/",
+      "result": "proxy CONNECT denied: 403 Forbidden; origin authentication/licensing not evaluated"
+    },
+    {
+      "name": "NASA public search API",
+      "url": "https://images-api.nasa.gov/search?q=engineering&media_type=video",
+      "result": "proxy CONNECT denied: 403 Forbidden; origin authentication/licensing not evaluated"
+    },
+    {
+      "name": "Wikimedia Commons",
+      "url": "https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch=filetype:video%20NASA%20interview&gsrnamespace=6&gsrlimit=3",
+      "result": "proxy CONNECT denied: 403 Forbidden; origin authentication/licensing not evaluated"
+    },
+    {
+      "name": "Internet Archive",
+      "url": "https://archive.org/advancedsearch.php?q=NASA+interview+AND+mediatype:movies&output=json&rows=3",
+      "result": "proxy CONNECT denied: 403 Forbidden; origin authentication/licensing not evaluated"
+    },
+    {
+      "name": "Blender film sharing/licensing",
+      "url": "https://mango.blender.org/sharing/",
+      "result": "proxy CONNECT denied: 403 Forbidden; origin authentication/licensing not evaluated"
+    }
+  ],
+  "accessible_alternative": "Public GitHub repository pages, search listings and raw README files",
+  "rejected_candidates": [
+    {
+      "source": "https://github.com/hankmt/Artemis-Timeline",
+      "decision": "reject_for_this_trial",
+      "reason": "Third-party mirror gives generic NASA usage guidance; exact speech video ownership, third-party inserts/audio and asset-specific status were not verified."
+    },
+    {
+      "source": "https://github.com/IndieSmiths/nodezator",
+      "decision": "reject_for_this_trial",
+      "reason": "README public-domain grant explicitly describes source code. It does not establish reuse rights to the linked YouTube demonstrations. No media downloaded."
+    },
+    {
+      "source": "https://github.com/asozialesnetzwerk/Videos",
+      "decision": "reject_for_this_trial",
+      "reason": "CC0 is explicitly present in repository description and one MP4 is listed, but creator/rights-holder provenance and third-party audiovisual content were not established. The CC0 label was not ignored; insufficient provenance prevented acceptance. No footage downloaded."
+    },
+    {
+      "source": "https://github.com/FAQLinux/Video-PD",
+      "decision": "reject_for_this_trial",
+      "reason": "Public-domain repository description alone; no usable asset and asset-specific provenance verified."
+    },
+    {
+      "source": "https://github.com/kingdomtradex/reelrelics-videos",
+      "decision": "reject_for_this_trial",
+      "reason": "Compiled cinema files are listed, but no verified asset-specific licence and original rights-holder evidence established. No footage downloaded."
+    }
+  ],
+  "scope_limit": "Targeted accessible candidates inspected; this is not a claim that every source on the Internet was searched.",
+  "rights_verification_completed": false,
+  "video_files_downloaded": 0,
+  "new_videos_generated": 0,
+  "transcription_performed": false,
+  "quality_tests_on_real_source": false,
+  "bugs_discovered_in_real_footage_trial": null,
+  "payments_or_paid_credits_used": false,
+  "uploads_or_publication": false,
+  "network_draft": {
+    "saved": true,
+    "new_domains": [
+      "images.nasa.gov",
+      "images-api.nasa.gov",
+      "images-assets.nasa.gov",
+      "www.nasa.gov",
+      "nasa.gov"
+    ],
+    "existing_api_github_com_preserved": true,
+    "applied_to_runtime": false,
+    "retry_result": "403 Forbidden",
+    "platform_requires_publication": true,
+    "environment_publication_attempted": false
+  },
+  "next_required_prerequisite": "Supported runtime network access to NASA search, exact asset metadata, media files and rights guidelines. No manual footage sourcing requested.",
+  "reproducibility": "Existing source-first pipeline preserved; autonomous lawful source acquisition is not validated while primary evidence access is blocked."
+}
