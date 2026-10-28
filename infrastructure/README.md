@@ -1,0 +1,1 @@
+No resources deployed or purchased. See ../docs/cloud-and-integrations.md for the proposed Actions-first design and prerequisites. Codex Cloud is the development environment, not an always-on production scheduler.

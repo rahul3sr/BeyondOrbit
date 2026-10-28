@@ -1,0 +1,1 @@
+Production reports contain elapsed seconds and external API spending. Views, retention, subscribers and revenue are unavailable until official channel authorization. Do not substitute zero for missing metrics.
