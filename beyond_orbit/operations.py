@@ -14,7 +14,7 @@ from .video import candidates,clip
 
 def campaign_fixture():
     url='https://example.invalid/beyond-orbit/synthetic-campaign'
-    values={'active':True,'owner':'SYNTHETIC DEMO — not a marketplace offer',
+    values={'active':False,'owner':'SYNTHETIC DEMO — not a marketplace offer',
         'rate_per_1000':2.0,'currency':'USD','payment_model':'per_1000_qualifying_views',
         'eligibility':'Synthetic fixture permits zero-follower adult accounts only',
         'min_followers':0,'countries':['US'],'platforms':['youtube'],
@@ -62,7 +62,8 @@ def scheduled_daily(store,inbox,at=None):
     return result
 
 
-def demo(out):
+def demo(out,*,fixture=False):
+    if not fixture:raise ValueError("Demo is a technical fixture only. Use the source-first pipeline; no slideshow or robotic fallback is permitted.")
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     db=Store(out/'operations.sqlite')
     campaign=campaign_fixture();write(out/'campaign-fixture.json',campaign)
@@ -71,11 +72,11 @@ def demo(out):
     estimate=forecast(campaign,assumptions())
     eligibility_result=eligibility(campaign,account,allow_fixture=True)
     spec=read(Path(__file__).resolve().parents[1]/'examples/original.json')
-    spec.update(duration=48,narration=True)
-    spec['rights']['audio']={'basis':'original','evidence':'Original script synthesized with installed Flite slt voice; no source recordings or music.'}
-    render(spec,out/'original')
+    spec.update(duration=48,narration=False)
+    spec['rights']['audio']={'basis':'none','evidence':'Technical fixture only; no production narration'}
+    render(spec,out/'original',fixture=True)
     subprocess.run(['ffmpeg','-hide_banner','-loglevel','error','-nostdin','-stream_loop','1',
-                    '-i',str(out/'original/video.mp4'),'-c','copy',str(out/'authorized-source.mp4')],check=True,capture_output=True)
+                    '-i',str(out/'original/video.mp4'),'-f','lavfi','-i','sine=frequency=440:duration=96','-map','0:v:0','-map','1:a:0','-c:v','copy','-c:a','aac','-shortest',str(out/'authorized-source.mp4')],check=True,capture_output=True)
     segments=[{'start':i*8,'end':(i+1)*8,'text':spec['scenes'][i%6]} for i in range(12)]
     write(out/'source-transcript.json',{'segments':segments,'provenance':'Known timed original script; not ASR'})
     ranked=candidates(segments);write(out/'clip-candidates.json',ranked)
@@ -112,7 +113,7 @@ def demo(out):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     sub=p.add_subparsers(dest='cmd',required=True)
-    d=sub.add_parser('demo');d.add_argument('--out',required=True)
+    d=sub.add_parser('technical-fixture');d.add_argument('--out',required=True)
     d=sub.add_parser('import');d.add_argument('--db',required=True);d.add_argument('file')
     d=sub.add_parser('daily');d.add_argument('--db',required=True);d.add_argument('--inbox',required=True)
     d=sub.add_parser('status');d.add_argument('--db',required=True)
@@ -121,7 +122,7 @@ def main():
     d=sub.add_parser('rank');d.add_argument('--db',required=True);d.add_argument('--account',required=True);d.add_argument('--assumptions',required=True)
     d=sub.add_parser('serve');d.add_argument('--db',required=True);d.add_argument('--port',type=int,default=8765)
     a=p.parse_args()
-    if a.cmd=='demo':result=demo(a.out)
+    if a.cmd=='technical-fixture':result=demo(a.out,fixture=True)
     elif a.cmd=='import':result=Store(a.db).import_campaign(read(a.file))
     elif a.cmd=='daily':result=scheduled_daily(Store(a.db),a.inbox)
     elif a.cmd=='status':
@@ -142,7 +143,13 @@ def main():
     else:
         from .review import server
         users=json.loads(os.environ.get('BEYOND_ORBIT_USERS','[]'))
-        s=server(Store(a.db),users,a.port)
+        gate=None
+        signing=os.environ.get('BEYOND_ORBIT_APPROVAL_KEY')
+        if signing:
+            if len(signing)<32:raise ValueError('Publication authority signing key must have at least 32 characters')
+            from .approval import Authenticator,PublicationGate
+            gate=PublicationGate(a.db,Path(a.db).parent/'immutable',Authenticator(users,signing.encode()))
+        s=server(Store(a.db),users,a.port,publication_gate=gate)
         print('Local review server started; publishing disabled',flush=True)
         try:s.serve_forever()
         finally:s.server_close()

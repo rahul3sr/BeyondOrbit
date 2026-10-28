@@ -1,0 +1,9 @@
+{
+  "title": "REQUIRED",
+  "description": "REQUIRED including attribution and disclosures",
+  "destination": {
+    "platform": "youtube",
+    "channel_id": "REQUIRED actual UC channel ID",
+    "privacy": "private"
+  }
+}

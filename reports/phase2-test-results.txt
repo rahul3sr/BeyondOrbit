@@ -1,0 +1,102 @@
+test_fixture_import_blocked (test_analytics.Evidence.test_fixture_import_blocked) ... ok
+test_forecasts_do_not_become_cash (test_analytics.Evidence.test_forecasts_do_not_become_cash) ... ok
+test_future_evidence_rejected (test_analytics.Evidence.test_future_evidence_rejected) ... ok
+test_approval_and_mutation (test_engine.Functional.test_approval_and_mutation) ... ok
+test_rejected_approval (test_engine.Functional.test_rejected_approval) ... ok
+test_render_decode_and_captions (test_engine.Functional.test_render_decode_and_captions) ... ok
+test_absent_script_rejected (test_engine.Gates.test_absent_script_rejected) ... ok
+test_missing_evidence_rejected (test_engine.Gates.test_missing_evidence_rejected) ... ok
+test_publishing_disabled (test_engine.Gates.test_publishing_disabled) ... ok
+test_scoring_is_explainable (test_engine.Gates.test_scoring_is_explainable) ... ok
+test_unknown_rights_rejected (test_engine.Gates.test_unknown_rights_rejected) ... ok
+test_budget_cap (test_operations.Campaigns.test_budget_cap) ... ok
+test_explicit_missing_field (test_operations.Campaigns.test_explicit_missing_field) ... ok
+test_financial_math_caps_fees_probability (test_operations.Campaigns.test_financial_math_caps_fees_probability) ... ok
+test_fixture_not_live_eligible (test_operations.Campaigns.test_fixture_not_live_eligible) ... ok
+test_nan_negative_unknown_terms (test_operations.Campaigns.test_nan_negative_unknown_terms) ... ok
+test_stale_evidence (test_operations.Campaigns.test_stale_evidence) ... ok
+test_unknown_rights_country_and_expiry (test_operations.Campaigns.test_unknown_rights_country_and_expiry) ... ok
+test_assumptions_and_relevance_change_rank (test_operations.Ranking.test_assumptions_and_relevance_change_rank) ... ok
+test_fixtures_not_ranked_as_real_opportunities (test_operations.Ranking.test_fixtures_not_ranked_as_real_opportunities) ... ok
+test_changed_terms_and_rejected_decision (test_operations.State.test_changed_terms_and_rejected_decision) ... ok
+test_changes_after_approval_and_queue (test_operations.State.test_changes_after_approval_and_queue) ... ok
+test_cost_limit (test_operations.State.test_cost_limit) ... ok
+test_daily_dedup_and_schedule (test_operations.State.test_daily_dedup_and_schedule) ... ok
+test_dashboard_no_invented_metrics (test_operations.State.test_dashboard_no_invented_metrics) ... ok
+test_global_duplicate_prevention (test_operations.State.test_global_duplicate_prevention) ... ok
+test_http_review_csrf_roles_and_preview (test_operations.State.test_http_review_csrf_roles_and_preview) ... ok
+test_import_dedup_and_material_revision (test_operations.State.test_import_dedup_and_material_revision) ... ok
+test_job_once_only (test_operations.State.test_job_once_only) ... ok
+test_live_adapter_blocked (test_operations.State.test_live_adapter_blocked) ... ok
+test_mock_platforms (test_operations.State.test_mock_platforms) ... ok
+test_pending_blocks (test_operations.State.test_pending_blocks) ... ok
+test_retry_revalidates_approval (test_operations.State.test_retry_revalidates_approval) ... ok
+test_roles_and_minors (test_operations.State.test_roles_and_minors) ... ok
+test_edit_and_chapters (test_operations.Vendor.test_edit_and_chapters) ... ok
+test_integrity_and_hook (test_operations.Vendor.test_integrity_and_hook) ... ok
+test_json_list_parser_quarantined (test_operations.Vendor.test_json_list_parser_quarantined) ... ok
+test_outliers (test_operations.Vendor.test_outliers) ... ok
+test_packaging (test_operations.Vendor.test_packaging) ... ok
+test_retention_percent_fixture (test_operations.Vendor.test_retention_percent_fixture) ... ok
+test_explicit_crop_preview (test_phase2_media.CropPreview.test_explicit_crop_preview) ... ok
+test_audio_sync_mismatch_rejected (test_phase2_media.MediaPipeline.test_audio_sync_mismatch_rejected) ... ok
+test_black_silence_and_subtitle_checks (test_phase2_media.MediaPipeline.test_black_silence_and_subtitle_checks) ... ok
+test_corrupt_media_rejected (test_phase2_media.MediaPipeline.test_corrupt_media_rejected) ... ok
+test_fixture_cannot_enter_production (test_phase2_media.MediaPipeline.test_fixture_cannot_enter_production) ... ok
+test_frame_crop_config_preserved (test_phase2_media.MediaPipeline.test_frame_crop_config_preserved) ... ok
+test_full_scale_clipped_audio_rejected (test_phase2_media.MediaPipeline.test_full_scale_clipped_audio_rejected) ... ok
+test_full_source_first_pipeline (test_phase2_media.MediaPipeline.test_full_source_first_pipeline) ... ok
+test_rejected_slideshow_detected (test_phase2_media.MediaPipeline.test_rejected_slideshow_detected) ... ok
+test_transcript_wrong_source_blocked (test_phase2_media.MediaPipeline.test_transcript_wrong_source_blocked) ... ok
+test_unreviewed_transcript_blocked (test_phase2_media.MediaPipeline.test_unreviewed_transcript_blocked) ... ok
+test_recorded_natural_speech_accuracy_and_timestamps (test_phase2_media.RecordedSpeechASR.test_recorded_natural_speech_accuracy_and_timestamps) ... ok
+test_passing_render_routes_to_pending_review_not_publication (test_phase2_routing.PipelineRouting.test_passing_render_routes_to_pending_review_not_publication) ... ok
+test_authentication_and_forged_identity (test_phase2_safeguards.ApprovalRepair.test_authentication_and_forged_identity) ... ok
+test_changed_campaign_registry_blocks_dispatch (test_phase2_safeguards.ApprovalRepair.test_changed_campaign_registry_blocks_dispatch) ... ok
+test_copied_approval_seal_cannot_authorize_other_version (test_phase2_safeguards.ApprovalRepair.test_copied_approval_seal_cannot_authorize_other_version) ... ok
+test_destination_evidence_must_be_authenticated (test_phase2_safeguards.ApprovalRepair.test_destination_evidence_must_be_authenticated) ... ok
+test_direct_upload_paths_blocked (test_phase2_safeguards.ApprovalRepair.test_direct_upload_paths_blocked) ... ok
+test_exact_payload_and_one_time_dispatch (test_phase2_safeguards.ApprovalRepair.test_exact_payload_and_one_time_dispatch) ... ok
+test_expiry_revalidated_immediately_before_dispatch (test_phase2_safeguards.ApprovalRepair.test_expiry_revalidated_immediately_before_dispatch) ... ok
+test_fixture_source_denied_publication_authority (test_phase2_safeguards.ApprovalRepair.test_fixture_source_denied_publication_authority) ... ok
+test_live_transport_remains_disabled (test_phase2_safeguards.ApprovalRepair.test_live_transport_remains_disabled) ... ok
+test_media_mutation_invalidates_dispatch (test_phase2_safeguards.ApprovalRepair.test_media_mutation_invalidates_dispatch) ... ok
+test_metadata_mutation_invalidates_dispatch (test_phase2_safeguards.ApprovalRepair.test_metadata_mutation_invalidates_dispatch) ... ok
+test_minor_and_unprivileged_reviewer_blocked (test_phase2_safeguards.ApprovalRepair.test_minor_and_unprivileged_reviewer_blocked) ... ok
+test_mismatched_source_rejected (test_phase2_safeguards.ApprovalRepair.test_mismatched_source_rejected) ... ok
+test_missing_explicit_authorization (test_phase2_safeguards.ApprovalRepair.test_missing_explicit_authorization) ... ok
+test_oauth_account_must_match (test_phase2_safeguards.ApprovalRepair.test_oauth_account_must_match) ... ok
+test_rejected_and_changed_requests_cannot_dispatch (test_phase2_safeguards.ApprovalRepair.test_rejected_and_changed_requests_cannot_dispatch) ... ok
+test_stale_rights_rejected (test_phase2_safeguards.ApprovalRepair.test_stale_rights_rejected) ... ok
+test_unknown_wrong_and_stale_destination (test_phase2_safeguards.ApprovalRepair.test_unknown_wrong_and_stale_destination) ... ok
+test_age_follower_location_and_account_age (test_phase2_safeguards.CampaignRepair.test_age_follower_location_and_account_age) ... ok
+test_expired_and_stale_material_terms (test_phase2_safeguards.CampaignRepair.test_expired_and_stale_material_terms) ... ok
+test_fixture_never_active (test_phase2_safeguards.CampaignRepair.test_fixture_never_active) ... ok
+test_no_slideshow_or_flite_production_fallback (test_phase2_safeguards.CampaignRepair.test_no_slideshow_or_flite_production_fallback) ... ok
+test_typed_countries_and_platforms (test_phase2_safeguards.CampaignRepair.test_typed_countries_and_platforms) ... ok
+test_unknown_rights_and_unreviewed_terms (test_phase2_safeguards.CampaignRepair.test_unknown_rights_and_unreviewed_terms) ... ok
+test_invalid_first_job_does_not_starve_valid_second (test_phase2_safeguards.QueueRepair.test_invalid_first_job_does_not_starve_valid_second) ... ok
+test_uncertain_upload_never_blindly_retried (test_phase2_safeguards.QueueRepair.test_uncertain_upload_never_blindly_retried) ... ok
+test_wrong_campaign_binding_rejected (test_phase2_safeguards.QueueRepair.test_wrong_campaign_binding_rejected) ... ok
+test_analytics_mock (test_protocol.OAuthProtocol.test_analytics_mock) ... ok
+test_credentials_permissions_and_no_overwrite (test_protocol.OAuthProtocol.test_credentials_permissions_and_no_overwrite) ... ok
+test_pkce_and_state_single_use (test_protocol.OAuthProtocol.test_pkce_and_state_single_use) ... ok
+test_private_resumable_upload_mock (test_protocol.OAuthProtocol.test_private_resumable_upload_mock) ... ok
+test_upload_redirect_exfiltration_rejected (test_protocol.OAuthProtocol.test_upload_redirect_exfiltration_rejected) ... ok
+test_clip_fixture_cannot_authorize_live (test_video.EndToEnd.test_clip_fixture_cannot_authorize_live) ... ok
+test_context_changes_are_bound (test_video.EndToEnd.test_context_changes_are_bound) ... ok
+test_demo_both_outputs_and_approval (test_video.EndToEnd.test_demo_both_outputs_and_approval) ... ok
+test_nonfinite_transcript (test_video.EndToEnd.test_nonfinite_transcript) ... ok
+
+----------------------------------------------------------------------
+Ran 89 tests in 26.007s
+
+OK
+{
+  "artifact": "/tmp/tmp_d1ukskq/output",
+  "creative_review_id": "f3cf059b3add482da360f5e0f0127bb7",
+  "review_database": "/tmp/tmp_d1ukskq/db.sqlite",
+  "state": "pending_creative_review",
+  "publication_authorized": false
+}
+TEST_SUMMARY_JSON={"categories": {"local_media": 33, "mock_transport_or_identity_evidence": 26, "pure_unit_or_local_utility": 30}, "collected": 89, "creative_acceptance_tests": 0, "errors": 0, "executed": 89, "failed": 0, "live_authorized_integration_tests": 0, "mock_dependent": 30, "note": "Local media tests use legal procedural fixtures and one pinned upstream natural-speech utterance, not a real campaign source.", "passed": 89, "skipped": 0}

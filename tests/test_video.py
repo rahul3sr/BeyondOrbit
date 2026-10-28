@@ -10,7 +10,7 @@ class EndToEnd(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.t=tempfile.TemporaryDirectory();cls.root=Path(cls.t.name)/'demo'
-        cls.result=demo(cls.root)
+        cls.result=demo(cls.root,fixture=True)
     @classmethod
     def tearDownClass(cls):cls.t.cleanup()
     def test_demo_both_outputs_and_approval(self):
@@ -20,8 +20,8 @@ class EndToEnd(unittest.TestCase):
         for directory in ('original','campaign-clip'):
             self.assertEqual(manifest(self.root/directory),read(self.root/directory/'manifest.json'))
         from beyond_orbit.engine import probe
-        for directory in ('original','campaign-clip'):
-            self.assertTrue(any(s['codec_type']=='audio' for s in probe(self.root/directory/'video.mp4')['streams']))
+        self.assertTrue(any(s['codec_type']=='audio' for s in probe(self.root/'campaign-clip/video.mp4')['streams']))
+        self.assertFalse(any(s['codec_type']=='audio' for s in probe(self.root/'original/video.mp4')['streams']))
     def test_clip_fixture_cannot_authorize_live(self):
         spec=read(self.root/'campaign-clip/spec.json')
         with self.assertRaisesRegex(ValueError,'Test fixture'):

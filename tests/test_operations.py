@@ -94,7 +94,7 @@ class State(unittest.TestCase):
         cls.shared=tempfile.TemporaryDirectory()
         cls.original=Path(cls.shared.name)/'original'
         spec=read(Path(__file__).resolve().parents[1]/'examples/original.json')
-        render(spec,cls.original)
+        render(spec,cls.original,fixture=True)
     @classmethod
     def tearDownClass(cls):cls.shared.cleanup()
     def setUp(self):
@@ -102,6 +102,8 @@ class State(unittest.TestCase):
         self.store=Store(self.root/'db.sqlite')
         self.c=campaign_fixture();self.imported=self.store.import_campaign(self.c)
         self.asset=self.root/'asset';shutil.copytree(self.original,self.asset)
+        write(self.asset/'context.json',{'campaign_id':self.imported['id'],'fingerprint':self.imported['fingerprint']})
+        write(self.asset/'manifest.json',manifest(self.asset))
         self.key=self.store.register(self.asset,self.imported['id'])
         self.owner={'id':'test-owner','role':'OWNER','minor':False}
     def tearDown(self):self.t.cleanup()
@@ -131,7 +133,8 @@ class State(unittest.TestCase):
     def test_changes_after_approval_and_queue(self):
         self.approve();self.store.enqueue_mock(self.key)
         (self.asset/'metadata.json').write_text('{}')
-        with self.assertRaises(ValueError):self.store.work_mock(YouTubeMock())
+        self.assertIsNone(self.store.work_mock(YouTubeMock()))
+        self.assertEqual(self.store.dashboard()['jobs'][0]['state'],'blocked')
     def test_changed_terms_and_rejected_decision(self):
         self.approve();self.store.decide(self.key,'rejected',self.owner)
         with self.assertRaises(ValueError):self.store.enqueue_mock(self.key)
@@ -155,7 +158,8 @@ class State(unittest.TestCase):
         with self.assertRaises(TimeoutError):self.store.work_mock(TimeoutMock())
         with self.store.tx() as c:c.execute("UPDATE jobs SET due='2000-01-01'")
         self.store.decide(self.key,'changes_requested',self.owner)
-        with self.assertRaises(ValueError):self.store.work_mock(YouTubeMock())
+        self.assertIsNone(self.store.work_mock(YouTubeMock()))
+        self.assertEqual(self.store.dashboard()['jobs'][0]['state'],'blocked')
     def test_daily_dedup_and_schedule(self):
         inbox=self.root/'inbox';inbox.mkdir();write(inbox/'campaign.json',self.c)
         r=scheduled_daily(self.store,inbox)
@@ -194,8 +198,10 @@ class Ranking(unittest.TestCase):
     def test_assumptions_and_relevance_change_rank(self):
         from beyond_orbit.campaigns import rank_opportunities,identity
         # Synthetic test data only, never imported into the real demo DB.
-        c=campaign_fixture();c['fixture']=False
-        r=rank_opportunities([c],{'followers':0,'country':'US','platform':'youtube'},{identity(c):assumptions()})
+        c=campaign_fixture();c['fixture']=False;c['fields']['active']['value']=True
+        c['restrictions']={'min_account_age_days':0,'min_age_years':18}
+        c['manual_terms_review']={'complete':True,'reviewer':'TEST','checked_at':now().isoformat()}
+        r=rank_opportunities([c],{'followers':0,'country':'US','platform':'youtube','account_age_days':1,'age_years':30},{identity(c):assumptions()})
         self.assertEqual(len(r['ranked']),1)
         a=assumptions();a['base']['audience_relevance']=0
         self.assertLess(forecast(c,a)['scenarios']['base']['estimated_contribution_usd'],0)

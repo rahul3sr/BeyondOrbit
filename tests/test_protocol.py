@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from urllib.parse import urlsplit,parse_qs
 from integrations.google_oauth import GoogleOAuth,save_tokens
-from integrations.youtube_protocol import YouTubeProtocol
+from integrations.youtube_protocol import YouTubeProtocol,RecordingTransport
 
 class OAuthProtocol(unittest.TestCase):
     def test_pkce_and_state_single_use(self):
@@ -30,15 +30,15 @@ class OAuthProtocol(unittest.TestCase):
         def mock(method,url,headers,body):
             calls.append((method,url,headers,body))
             return {'location':'https://www.googleapis.com/upload/youtube/v3/videos?upload_id=fixture'} if method=='POST' else {'id':'mock-id'}
-        client=YouTubeProtocol(mock)
+        client=YouTubeProtocol(RecordingTransport([{'location':'https://www.googleapis.com/upload/youtube/v3/videos?upload_id=fixture'},{'id':'mock-id'}]))
         m={'title':'Fixture','description':'Fixture only','destination':{'platform':'youtube','privacy':'private'}}
-        self.assertEqual(client.private_upload(b'not-a-real-video',m,'synthetic-fixture-only')['id'],'mock-id')
-        self.assertEqual(json.loads(calls[0][3])['status']['privacyStatus'],'private')
+        self.assertEqual(client.simulate_private_upload(b'not-a-real-video',m,'synthetic-fixture-only')['id'],'mock-id')
+        self.assertEqual(json.loads(client.transport.calls[0][3])['status']['privacyStatus'],'private')
         m['destination']['privacy']='public'
-        with self.assertRaises(ValueError):client.private_upload(b'',m,'synthetic-fixture-only')
+        with self.assertRaises(ValueError):client.simulate_private_upload(b'',m,'synthetic-fixture-only')
     def test_upload_redirect_exfiltration_rejected(self):
-        client=YouTubeProtocol(lambda *a:{'location':'https://attacker.invalid/session'})
-        with self.assertRaises(ValueError):client.private_upload(b'',{'title':'t','description':'d','destination':{'platform':'youtube','privacy':'private'}},'synthetic-fixture-only')
+        client=YouTubeProtocol(RecordingTransport([{'location':'https://attacker.invalid/session'}]))
+        with self.assertRaises(ValueError):client.simulate_private_upload(b'',{'title':'t','description':'d','destination':{'platform':'youtube','privacy':'private'}},'synthetic-fixture-only')
     def test_analytics_mock(self):
         calls=[]
         client=YouTubeProtocol(lambda *a:calls.append(a) or {'rows':[]})

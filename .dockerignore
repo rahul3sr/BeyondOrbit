@@ -1,0 +1,11 @@
+.git
+.venv
+artifacts
+state
+credentials
+.env
+.env.*
+__pycache__
+*.pyc
+*.sqlite*
+*.log

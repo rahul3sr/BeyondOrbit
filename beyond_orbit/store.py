@@ -33,7 +33,10 @@ class Store:
                 due TEXT,error TEXT,result TEXT,upload_key TEXT UNIQUE,UNIQUE(asset,sha,mode));
             CREATE TABLE IF NOT EXISTS finances(id INTEGER PRIMARY KEY,kind TEXT,amount REAL,asset TEXT,note TEXT,at TEXT);
             CREATE TABLE IF NOT EXISTS metrics(id INTEGER PRIMARY KEY,platform TEXT,video TEXT,name TEXT,value REAL,source TEXT,at TEXT);
+            CREATE TABLE IF NOT EXISTS job_events(id INTEGER PRIMARY KEY,job TEXT,event TEXT,details TEXT,at TEXT);
             ''')
+            if 'account' not in {r[1] for r in c.execute('PRAGMA table_info(assets)')}:
+                c.execute('ALTER TABLE assets ADD COLUMN account TEXT')
 
     def connect(self):
         c=sqlite3.connect(self.path,timeout=20)
@@ -61,7 +64,7 @@ class Store:
             if event!='unchanged': c.execute('INSERT INTO revisions(campaign,event,fingerprint,at) VALUES(?,?,?,?)',(key,event,fp,stamp))
         return {'id':key,'event':event,'fingerprint':fp}
 
-    def register(self,path,campaign=None):
+    def register(self,path,campaign=None,account=None):
         path=Path(path).resolve()
         if manifest(path)!=read(path/'manifest.json'): raise ValueError('Invalid artifact manifest')
         if not read(path/'report.json')['qc']['passed']: raise ValueError('QC failed')
@@ -69,10 +72,19 @@ class Store:
         with self.tx() as c:
             terms=None
             if campaign:
-                row=c.execute('SELECT fingerprint FROM campaigns WHERE id=?',(campaign,)).fetchone()
+                row=c.execute('SELECT fingerprint,data FROM campaigns WHERE id=?',(campaign,)).fetchone()
                 if row is None:raise ValueError('Unknown campaign')
                 terms=row[0]
-            c.execute('INSERT INTO assets VALUES(?,?,?,?,?,?)',(key,str(path),sha,campaign,terms,'pending'))
+                data=json.loads(row[1])
+                from .campaigns import eligibility
+                context=read(path/'context.json') if (path/'context.json').exists() else {}
+                if context.get('campaign_id')!=campaign or context.get('fingerprint')!=terms:
+                    raise ValueError('Artifact campaign association mismatch')
+                actual_account=account or ({'followers':0,'country':'US','platform':'youtube'} if data['fixture'] else {})
+                if not eligibility(data,actual_account,allow_fixture=data['fixture'])['eligible']:raise ValueError('Campaign not eligible')
+                account=actual_account
+            c.execute('INSERT INTO assets(id,path,sha,campaign,terms,state,account) VALUES(?,?,?,?,?,?,?)',
+                      (key,str(path),sha,campaign,terms,'pending',json.dumps(account)))
         return key
 
     def _current(self,c,key):
@@ -82,8 +94,12 @@ class Store:
         if m!=read(Path(a['path'])/'manifest.json') or m['sha256']!=a['sha']:
             raise ValueError('Asset changed: register a new version and reapprove')
         if a['campaign']:
-            row=c.execute('SELECT fingerprint FROM campaigns WHERE id=?',(a['campaign'],)).fetchone()
+            row=c.execute('SELECT fingerprint,data FROM campaigns WHERE id=?',(a['campaign'],)).fetchone()
             if not row or row[0]!=a['terms']:raise ValueError('Campaign terms changed: re-review required')
+            from .campaigns import eligibility
+            data=json.loads(row[1])
+            if not eligibility(data,json.loads(a['account']) or {},allow_fixture=data['fixture'])['eligible']:
+                raise ValueError('Campaign expired, stale or ineligible')
         return a
 
     def decide(self,key,decision,principal):
@@ -112,34 +128,60 @@ class Store:
         if not row or row['decision']!='approved' or row['sha']!=a['sha'] or row['terms']!=a['terms']:
             raise ValueError('Exact-version human approval required')
 
+    def _event(self,c,job,event,details):
+        c.execute('INSERT INTO job_events(job,event,details,at) VALUES(?,?,?,?)',
+                  (job,event,json.dumps(details),now().isoformat()))
+
     def work_mock(self,adapter,max_cost_usd=0):
-        # Take an atomic claim, then revalidate before the side effect. Crashed in-flight jobs
-        # stay running/uncertain for reconciliation, never automatically re-upload.
         from .campaigns import number
-        number(max_cost_usd)
-        if getattr(adapter,'mode',None)!='mock':raise ValueError('Only mock adapters are enabled')
+        from integrations.social import MockPlatform
+        number(max_cost_usd);number(adapter.cost_usd if isinstance(adapter,MockPlatform) else 0)
+        if not isinstance(adapter,MockPlatform) or adapter.mode!='mock':raise ValueError('Only explicit simulation adapters are enabled')
+        # Invalid work is quarantined and cannot starve subsequent valid work.
+        while True:
+            with self.tx() as c:
+                j=c.execute("SELECT * FROM jobs WHERE state IN ('queued','retry','retryable') AND due<=? ORDER BY due LIMIT 1",(now().isoformat(),)).fetchone()
+                if not j:return None
+                try:
+                    a=self._current(c,j['asset']);self._approved(c,a)
+                except (ValueError,PermissionError,FileNotFoundError,KeyError) as e:
+                    c.execute("UPDATE jobs SET state='blocked',error=? WHERE id=?",(type(e).__name__,j['id']))
+                    self._event(c,j['id'],'blocked',{'phase':'preflight','error_type':type(e).__name__})
+                    continue
+                if adapter.cost_usd>max_cost_usd:raise ValueError('Cost limit exceeded')
+                c.execute("UPDATE jobs SET state='running',attempts=attempts+1 WHERE id=?",(j['id'],))
+                self._event(c,j['id'],'running',{'attempt':j['attempts']+1,'mode':'simulation'})
+            try:
+                with self.tx() as c:
+                    a=self._current(c,j['asset']);self._approved(c,a)
+                    result=adapter.upload(Path(a['path'])/'video.mp4',read(Path(a['path'])/'metadata.json'),j['id'])
+                    c.execute("UPDATE jobs SET state='completed',result=? WHERE id=?",(json.dumps(result),j['id']))
+                    self._event(c,j['id'],'completed',{'mode':'simulation','publicly_published':False})
+                    c.execute('INSERT INTO finances(kind,amount,asset,note,at) VALUES(?,?,?,?,?)',
+                              ('production_expense',adapter.cost_usd,a['id'],'simulation cost',now().isoformat()))
+            except Exception as e:
+                attempts=j['attempts']+1
+                state='retryable' if isinstance(e,TimeoutError) and attempts<3 else 'failed'
+                if isinstance(e,UploadUncertain):state='uncertain_upload'
+                if isinstance(e,(ValueError,PermissionError,FileNotFoundError)):state='blocked'
+                with self.tx() as c:
+                    c.execute('UPDATE jobs SET state=?,due=?,error=? WHERE id=?',
+                              (state,(now()+timedelta(seconds=2**attempts)).isoformat(),type(e).__name__,j['id']))
+                    self._event(c,j['id'],state,{'phase':'dispatch','error_type':type(e).__name__,'safe_automatic_retry':state=='retryable'})
+                raise
+            return result
+
+    def reconcile(self,job,principal,outcome,confirmed_not_uploaded=False):
+        authorize(principal,'approve')
+        if outcome not in {'retry','completed','failed'}:raise ValueError('Unknown reconciliation outcome')
         with self.tx() as c:
-            j=c.execute("SELECT * FROM jobs WHERE state IN ('queued','retry') AND due<=? ORDER BY due LIMIT 1",(now().isoformat(),)).fetchone()
-            if not j:return None
-            a=self._current(c,j['asset']);self._approved(c,a)
-            if adapter.cost_usd>max_cost_usd:raise ValueError('Cost limit exceeded')
-            c.execute("UPDATE jobs SET state='running',attempts=attempts+1 WHERE id=?",(j['id'],))
-        try:
-            # Check again immediately before invoking the mock. No live adapter can enter.
-            with self.tx() as c:
-                a=self._current(c,j['asset']);self._approved(c,a)
-                result=adapter.upload(Path(a['path'])/'video.mp4',read(Path(a['path'])/'metadata.json'),j['id'])
-                c.execute("UPDATE jobs SET state='succeeded',result=? WHERE id=?",(json.dumps(result),j['id']))
-                c.execute('INSERT INTO finances(kind,amount,asset,note,at) VALUES(?,?,?,?,?)',
-                          ('production_expense',adapter.cost_usd,a['id'],'mock upload cost',now().isoformat()))
-        except Exception as e:
-            attempts=j['attempts']+1
-            safe_retry=isinstance(e,TimeoutError) and adapter.mode=='mock' and attempts<3
-            with self.tx() as c:
-                c.execute('UPDATE jobs SET state=?,due=?,error=? WHERE id=?',
-                          ('retry' if safe_retry else 'failed',(now()+timedelta(seconds=2**attempts)).isoformat(),type(e).__name__,j['id']))
-            raise
-        return result
+            row=c.execute('SELECT * FROM jobs WHERE id=?',(job,)).fetchone()
+            if not row or row['state'] not in {'uncertain_upload','running','blocked','failed'}:raise ValueError('Job does not require operator reconciliation')
+            if outcome=='retry' and not confirmed_not_uploaded:raise ValueError('Confirm no external upload before retry')
+            if outcome=='retry':
+                a=self._current(c,row['asset']);self._approved(c,a)
+            c.execute('UPDATE jobs SET state=?,due=? WHERE id=?',('queued' if outcome=='retry' else outcome,now().isoformat(),job))
+            self._event(c,job,'reconciled',{'reviewer':principal['id'],'outcome':outcome,'confirmed_not_uploaded':confirmed_not_uploaded})
 
     def dashboard(self):
         with self.connect() as c:
@@ -148,3 +190,7 @@ class Store:
                     'approvals':rows('approvals'),'finances':rows('finances'),'metrics':rows('metrics'),
                     'unavailable':['views','retention','subscribers','revenue until verified imports or official API authorization'],
                     'runtime':'local SQLite; no hosted scheduler or live publishing'}
+
+
+class UploadUncertain(RuntimeError):
+    """Outcome cannot safely be inferred or automatically retried."""

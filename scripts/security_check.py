@@ -20,4 +20,4 @@ for name in files:
     if any(pattern.search(text) for pattern in patterns):failures.append(name+': possible credential (value withheld)')
 if failures:
     print('\n'.join(failures));sys.exit(1)
-print(f'PASS: focused credential-pattern scan of {len(files)} source files; vendored integrity verified. No pip dependencies to audit.')
+print(f'PASS: focused credential-pattern scan of {len(files)} source files; vendored integrity verified. ASR dependencies are hash-pinned in requirements-asr.lock; this is not a vulnerability audit.')

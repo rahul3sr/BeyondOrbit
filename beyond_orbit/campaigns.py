@@ -57,6 +57,18 @@ def validate(data):
         if f['value'] is not None: number(f['value'])
     if data['fields']['fee_fraction']['value'] is not None:
         number(data['fields']['fee_fraction']['value'],0,1)
+    typed={'active':bool,'countries':list,'platforms':list,'usage_rights':dict,'required_disclosures':list}
+    for key,kind in typed.items():
+        v=data['fields'][key]['value']
+        if v is not None and not isinstance(v,kind):raise ValueError('Invalid field type: '+key)
+        if kind is list and v is not None and any(not isinstance(x,str) or not x.strip() for x in v):
+            raise ValueError('List entries must be nonempty strings: '+key)
+    if data['fields']['deadline']['value'] is not None:when(data['fields']['deadline']['value'])
+    if data['fixture'] and data['fields']['active']['value'] is True:
+        raise ValueError('Synthetic campaigns must never be labelled active')
+    restrictions=data.get('restrictions',{})
+    for key in ('min_account_age_days','min_age_years'):
+        if key in restrictions:number(restrictions[key])
     return data
 
 
@@ -65,7 +77,7 @@ def identity(data):
 
 
 def fingerprint(data):
-    material={'fixture':data['fixture'],'name':data['name'],'fields':{
+    material={'fixture':data['fixture'],'name':data['name'],'restrictions':data.get('restrictions',{}),'manual_terms_review':data.get('manual_terms_review',{}),'fields':{
         k:{'value':v['value'],'status':v['status'],'source_url':v.get('source_url')}
         for k,v in data['fields'].items()}}
     return hashlib.sha256(json.dumps(material,sort_keys=True).encode()).hexdigest()
@@ -75,6 +87,11 @@ def eligibility(data, account, at=None, allow_fixture=False):
     validate(data)
     at=at or now()
     reasons=[]
+    if not isinstance(account,dict):raise ValueError('Structured account information required')
+    try:number(account.get('followers'))
+    except ValueError:reasons.append('Invalid or missing follower count')
+    for key in ('country','platform'):
+        if not isinstance(account.get(key),str) or not account[key]:reasons.append('Invalid or missing account '+key)
     def value(key):
         f=data['fields'][key]
         if f['status']!='verified' or not f.get('checked_at') or at-when(f['checked_at'])>timedelta(days=1):
@@ -87,15 +104,28 @@ def eligibility(data, account, at=None, allow_fixture=False):
     platforms=value('platforms'); deadline=value('deadline'); budget=value('remaining_budget')
     rights=value('usage_rights'); source=value('source_footage'); terms=value('submission_conditions')
     value('eligibility');value('required_disclosures')
-    if active is not True: reasons.append('Campaign is not verified active')
-    if followers is not None and account['followers']<followers: reasons.append('Insufficient followers')
-    if countries is not None and account['country'] not in countries: reasons.append('Country ineligible')
-    if platforms is not None and account['platform'] not in platforms: reasons.append('Platform ineligible')
+    if active is not True and not (data['fixture'] and allow_fixture): reasons.append('Campaign is not verified active')
+    if followers is not None and isinstance(account.get('followers'),(int,float)) and account['followers']<followers: reasons.append('Insufficient followers')
+    if countries is not None and account.get('country') not in countries: reasons.append('Country ineligible')
+    if platforms is not None and account.get('platform') not in platforms: reasons.append('Platform ineligible')
     if deadline is not None and when(deadline)<=at: reasons.append('Campaign expired')
     if budget is not None and budget<=0: reasons.append('No remaining campaign budget')
     if not isinstance(rights,dict) or rights.get('commercial_clipping') is not True:
         reasons.append('Commercial clipping permission missing')
     if not source or not terms: reasons.append('Source footage or submission terms missing')
+    if not data['fixture']:
+        review=data.get('manual_terms_review',{})
+        if not review.get('complete') or not review.get('reviewer') or not review.get('checked_at'):
+            reasons.append('Uninterpreted terms require documented manual verification')
+        elif at-when(review['checked_at'])>timedelta(days=1):reasons.append('Manual terms review stale')
+        restrictions=data.get('restrictions')
+        if not isinstance(restrictions,dict) or not {'min_account_age_days','min_age_years'}.issubset(restrictions):
+            reasons.append('Structured account-age and participant-age restrictions required')
+        else:
+            for limit,field in [('min_account_age_days','account_age_days'),('min_age_years','age_years')]:
+                if field not in account or number(account[field])<restrictions[limit]:reasons.append('Unmet restriction: '+field)
+        for key in ('rate_per_1000','currency','payment_model','fee_fraction','max_payout','payout_threshold'):
+            value(key)
     return {'eligible':not reasons,'reasons':reasons,'fixture':data['fixture'],
             'requires_human_terms_review':True}
 
@@ -105,6 +135,7 @@ def forecast(data, assumptions):
     def financial(key):
         f=data['fields'][key]
         if f['status']!='verified': raise ValueError('Unverified financial term: '+key)
+        if not f.get('checked_at') or now()-when(f['checked_at'])>timedelta(days=1):raise ValueError('Stale financial term: '+key)
         return f['value']
     if financial('payment_model')!='per_1000_qualifying_views' or financial('currency')!='USD':
         raise ValueError('Only explicit USD per-1000 qualifying-view campaigns supported')

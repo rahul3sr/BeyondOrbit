@@ -8,7 +8,7 @@ Require documented rights for every visual, audio, script, and source asset. Unk
 Approval must bind exact video bytes, captions, metadata, and destination. Any change invalidates it.
 Never manufacture approval records for the user. Local approval files are audit records, not identity authentication.
 Distinguish fixtures, offline execution, and live API validation. Report actual tests and limitations.
-Run `python3 -m unittest discover -s tests -v`. Render demo with `python3 -m beyond_orbit demo`.
+Run `.venv/bin/python scripts/run_checks.py --save-report`. Production uses `beyond_orbit.pipeline` and requires a real authorized source. Text/Flite generation is technical-fixture-only.
 
 Use rahul3sr/BeyondOrbit as the sole repository. Preserve the original commit and recovery artifacts.
 Never retry the stuck environment publication or create a new environment without user direction.
@@ -19,3 +19,5 @@ Only mock adapters may enter the job worker. No paid cloud resources or schedule
 Run python3 -m unittest discover -s tests -v and python3 scripts/security_check.py before pushing.
 
 Creative quality matters independently of passing media tests. Do not present blank-background text videos or Flite robot speech as finished content. Use actual rights-cleared visuals, purposeful editing and human-reviewed narration. Label technical fixtures and still-image motion proofs accurately. Never infer creative acceptance from an FFmpeg decode test.
+
+Phase 2 authority: preserve the original 49 test cases while updating explicit fixture setup and safety expectations; add adversarial acceptance tests. Never represent legal synthetic validation media as a real source or a professional demo. No live upload transport may bypass PublicationGate. Do not silently approve ASR drafts or assert a channel string is official verification.

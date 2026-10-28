@@ -1,0 +1,21 @@
+# Inactive single-host deployment definition. Do not expose review directly.
+# HTTPS/identity edge, durable volumes and budget approval remain prerequisites.
+services:
+  review:
+    build:
+      context: ..
+      dockerfile: infrastructure/Dockerfile.phase2
+    network_mode: host
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+    environment:
+      BEYOND_ORBIT_USERS: ${BEYOND_ORBIT_USERS:?Configure individual review credentials securely}
+      BEYOND_ORBIT_APPROVAL_KEY: ${BEYOND_ORBIT_APPROVAL_KEY:?Configure persistent signing key securely}
+    volumes:
+      - ${BEYOND_ORBIT_STATE_DIR:?Provide approved persistent state directory}:/state
+    command: ["/app/.venv/bin/python", "-m", "beyond_orbit.operations", "serve", "--db", "/state/operations.sqlite", "--port", "8765"]
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]

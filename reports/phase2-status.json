@@ -1,0 +1,83 @@
+{
+  "phase": 2,
+  "base_commit": "7920e77cd4d372fbf0c315700e1f8fa417cced6e",
+  "branch": "repair/phase2-real-clipping",
+  "tests": {
+    "collected": 89,
+    "executed": 89,
+    "passed": 89,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "categories": {
+      "pure_unit_or_local_utility": 30,
+      "local_media": 33,
+      "mock_transport_or_identity_evidence": 26
+    },
+    "mock_dependent": 30,
+    "live_authorized_integration_tests": 0,
+    "creative_acceptance_tests": 0,
+    "note": "Local media tests use legal procedural fixtures and one pinned upstream natural-speech utterance, not a real campaign source."
+  },
+  "followup_validation": "27 safeguard and 9 campaign/ranking cases passed after final account typing validation",
+  "repaired": [
+    "authenticated publication authority and exact payload snapshots",
+    "explicit publish authorization and destination evidence",
+    "campaign expiry, freshness, age restrictions and association",
+    "queue starvation, uncertain states and operator reconciliation",
+    "production slideshow/Flite fallback removed",
+    "source-first ingestion, explicit crop preview, source-audio-preserving clips",
+    "timestamped offline ASR with required human verification",
+    "motion/black/silence/clipping/alignment and caption QA"
+  ],
+  "professional_demo": {
+    "delivered": false,
+    "blocker": "No suitable rights-cleared real source with natural speech exists in workspace"
+  },
+  "development_artifact": {
+    "path": "artifacts/phase2-development-validation/output/video.mp4",
+    "duration": 30,
+    "kind": "procedural motion and chirp test only",
+    "fixture": true,
+    "natural_speech": false,
+    "production_or_campaign_claim": false
+  },
+  "asr": {
+    "engine": "PocketSphinx 5.0.4",
+    "dependency_lock": "requirements-asr.lock",
+    "natural_sample_wer": 0.0,
+    "natural_sample_scope": "four-word pinned upstream recording only",
+    "existing_synthetic_speech_wer": 0.2241,
+    "human_audio_review_required": true,
+    "neural_quality_claim": false
+  },
+  "campaigns": {
+    "verified_live": 0,
+    "synthetic_new_records_active": false,
+    "live_access": "ContentRewards and Vyro proxy-denied",
+    "fallback": "original-document-preserving manual brief import"
+  },
+  "higgsfield": {
+    "official_api_contract": "unverified; documentation proxy-denied",
+    "credits_used": 0,
+    "provider_adapter_added": false
+  },
+  "youtube": {
+    "live_credentials_connected": false,
+    "live_uploads": 0,
+    "actual_destination_verified": false,
+    "transport": "in-memory simulation only"
+  },
+  "cloud": {
+    "deployed": false,
+    "container_configuration": "prepared, not built or restart-tested",
+    "environment_publication_attempted": false
+  },
+  "costs": {
+    "paid_resources_activated": 0,
+    "external_api_usd": 0,
+    "development_compute_usd": null,
+    "future_spend": "requires approval and verified rates"
+  },
+  "required_next_input": "One authorized MP4/MOV/MKV with natural speech plus owner and commercial clipping rights evidence"
+}

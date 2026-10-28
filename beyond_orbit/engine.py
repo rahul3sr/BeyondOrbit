@@ -54,8 +54,8 @@ def score(text):
 
 
 def probe(path):
-    result = subprocess.run(["ffprobe", "-v", "error", "-show_streams", "-show_format",
-                             "-of", "json", str(path)], check=True, capture_output=True, text=True)
+    result = subprocess.run(["ffprobe", "-v", "error", "-protocol_whitelist", "file,pipe", "-show_streams", "-show_format",
+                             "-of", "json", str(path)], check=True, capture_output=True, text=True, timeout=30)
     return json.loads(result.stdout)
 
 
@@ -66,7 +66,7 @@ def qc(path):
     checks = {"duration_30_to_60": 30 <= duration <= 60,
               "vertical_9_16": v["width"] * 16 == v["height"] * 9,
               "h264": v["codec_name"] == "h264", "nonempty": Path(path).stat().st_size > 1000}
-    subprocess.run(["ffmpeg", "-v", "error", "-i", str(path), "-f", "null", "-"],
+    subprocess.run(["ffmpeg", "-v", "error", "-protocol_whitelist", "file,pipe", "-i", str(path), "-f", "null", "-"],
                    check=True, capture_output=True)
     checks["fully_decodable"] = True
     return {"passed": all(checks.values()), "checks": checks, "duration": duration,
@@ -80,7 +80,8 @@ def timestamp(seconds):
     return f"{ms//3600000:02}:{ms//60000%60:02}:{ms//1000%60:02},{ms%1000:03}"
 
 
-def render(spec, out):
+def render(spec, out, *, fixture=False):
+    if not fixture:raise ValueError("Text/Flite renderer is a technical fixture only. Use beyond_orbit.pipeline with an authorized source asset.")
     started = time.monotonic()
     rights = rights_check(spec)
     scenes = spec["scenes"]
@@ -91,6 +92,7 @@ def render(spec, out):
         raise ValueError("Duration must be 30–60 seconds")
     out = Path(out).resolve()
     out.mkdir(parents=True, exist_ok=False)
+    spec = dict(spec, fixture=True)
     write(out / "spec.json", spec)
     step = duration / len(scenes)
     srt = "\n\n".join(f"{i+1}\n{timestamp(i*step)} --> {timestamp((i+1)*step)}\n" +
@@ -125,7 +127,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
            "-movflags", "+faststart", "video.mp4"]
     if spec.get('narration'):
         from .narration import narrate
-        narrate(scenes, step, out)
+        narrate(scenes, step, out, fixture=True)
         cmd = cmd[:cmd.index('-vf')] + ['-i', 'narration.wav'] + cmd[cmd.index('-vf'):]
         cmd.remove('-an')
         cmd[-1:-1] = ['-map', '0:v:0', '-map', '1:a:0', '-c:a', 'aac']
@@ -149,7 +151,7 @@ BOUND_FILES = ("video.mp4", "captions.srt", "captions.ass", "metadata.json", "sp
 
 def manifest(out):
     out = Path(out)
-    names = BOUND_FILES + tuple(n for n in ("context.json", "transcript.json") if (out/n).exists())
+    names = BOUND_FILES + tuple(n for n in ("context.json", "transcript.json", "source.json", "rights.json", "selection.json", "costs.json", "rights-document.txt") if (out/n).exists())
     hashes = {name: digest(out / name) for name in names}
     encoded = json.dumps(hashes, sort_keys=True).encode()
     return {"sha256": hashlib.sha256(encoded).hexdigest(), "files": hashes}

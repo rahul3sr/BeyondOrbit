@@ -1,0 +1,22 @@
+{
+  "start": 0,
+  "end": 30,
+  "editor": "REQUIRED",
+  "confirmed": false,
+  "framing": {
+    "x": 0.5,
+    "y": 0.5,
+    "width": 1080,
+    "height": 1920
+  },
+  "caption_size": 42,
+  "creative_checks": {
+    "clear_beginning": false,
+    "coherent_story": false,
+    "meaningful_ending": false,
+    "speaker_continuity": false,
+    "audible_clarity": false,
+    "visual_relevance": false,
+    "natural_pacing": false
+  }
+}

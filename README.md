@@ -1,35 +1,17 @@
-# Beyond Orbit
+# Beyond Orbit — Phase 2 source-first clipping
 
-A working local campaign-to-video and original-video engine with version-bound human review and mock-only publishing. This extends the preserved offline prototype; it is not a live monetized or continuously running service.
-
-## Creative quality
-
-The original text-and-Flite videos are technical fixtures, not acceptable finished Shorts. Automated decode/QC checks do not certify creative quality. Robotic speech is not an approved production voice.
-
-A separate visual-proof renderer now supports six original storyboard scenes, camera motion, concise editorial text and original sound design, with no robotic narration:
+Production now requires authorized moving footage and preserves its source audio. The rejected text/Flite renderer is explicitly a technical fixture; there is no production slideshow or robotic narration fallback.
 
 ```bash
-python3 -m beyond_orbit.cinematic PATH_TO_ORIGINAL_3_BY_2_STORYBOARD.png --out artifacts/NEW_VISUAL_PROOF
+.venv/bin/python -m beyond_orbit.pipeline --help
+.venv/bin/python scripts/run_checks.py --save-report
+.venv/bin/python scripts/security_check.py
 ```
 
-This animates still artwork; it is not full generative video. A natural voiceover still needs an authorized voice service or a human recording. The current rebuilt artifact is `artifacts/creative-rebuild-v1/video.mp4` (kept outside Git).
+Use the [exact ingestion/editing interface](docs/phase2-operations.md), [production templates](examples/production), and [Phase 2 test results](reports/phase2-tests.json). Install `requirements-asr.lock` with hash verification in Python 3.12 Linux x86_64. Local ASR drafts require listening/correction before rendering.
 
-## Verified technical workflow
+Repairs include authenticated version-bound publication authority, signed destination evidence, immutable snapshots, current campaign/source/rights checks, queue starvation/reconciliation fixes, explicit crop preview, timed captions, and motion/black/silence/clipping/audio-alignment QA. Live uploads are disabled. No paid resources or Google credentials are connected.
 
-```bash
-python3 -m unittest discover -s tests -v
-python3 scripts/security_check.py
-python3 -m beyond_orbit.operations demo --out artifacts/NEW_RUN_NAME
-```
+No appropriate real source footage was present. The available Phase 2 render is explicitly a moving-pattern/chirp development fixture, not a professional Short or real campaign. A rights-cleared source with natural speech is still required for the business demonstration. No real campaign, Higgsfield contract or permanent cloud deployment has been verified.
 
-The demo imports an explicitly synthetic campaign, checks a zero-follower test account, computes three illustrative profitability scenarios, renders a 48-second narrated original video, creates authorized source footage, ranks transcript segments, extracts a 32-second vertical clip, generates captions/metadata, checks technical quality, records costs and stops awaiting human approval. No public upload, campaign submission or real approval is made. Use a fresh output directory.
-
-Python 3.12+, FFmpeg/ffprobe with libx264/libass/Flite and DejaVu Sans are required. No pip packages are required. All six audited YouTube utilities are pinned with MIT attribution and checksums; no plugin installer or permanent Claude process is needed.
-
-## Working capabilities and boundaries
-
-Campaign imports, evidence labels, deduplication, revisions, eligibility, contribution ranking, local video production, captions, narration, quality reports, individual authenticated review, local job queue, mock platform adapters and operating reports work in tests. Both original baseline videos and recovery files remain preserved.
-
-Live marketplace discovery, automatic speech transcription, factual topic research, Higgsfield generation, Google authorization, real uploads, hosted review, permanent scheduling and channel revenue data are NOT connected. There are no verified current paid campaign opportunities or actual earnings. Mock protocol tests are not live integration validation.
-
-See [operating guide](docs/operating-guide.md), [architecture](docs/architecture.md), [third-party audit](docs/third-party-audit.md), [cloud status](infrastructure/README.md), and [machine-readable status](reports/status.json).
+The audited baseline and its recovery files remain preserved. Historical material in docs/milestone-1.md and reports/status.json describes previous milestones; Phase 2 evidence supersedes it.

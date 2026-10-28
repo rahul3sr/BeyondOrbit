@@ -22,14 +22,15 @@ function node(tag,text,parent){let n=document.createElement(tag);n.textContent=t
 async function load(){let d=await request('/api/dashboard');csrf=d.csrf;let desk=document.querySelector('#desk');desk.replaceChildren();document.querySelector('#login').hidden=true;
 node('h2','Campaigns and operations',desk);node('pre',JSON.stringify({identity:d.identity,summary:d.summary,campaigns:d.campaigns.map(c=>({id:c.id,...JSON.parse(c.data)})),jobs:d.jobs,finances:d.finances,metrics:d.metrics,unavailable:d.unavailable},null,2),desk);
 for(let a of d.assets){let card=node('article','',desk);node('h2',a.metadata.title,card);let v=document.createElement('video');v.controls=true;v.preload='metadata';v.src='/media/'+a.id;card.append(v);node('p',a.metadata.description,card);node('pre',JSON.stringify({state:a.state,version:a.sha,campaign:a.campaign,source:a.spec.source_name||'Original procedural graphics',rights:a.report.rights,compliance:a.report.compliance||'Human rights and facts review required',cost:a.report.external_api_cost_usd,target:a.metadata.destination,suggested_time:a.spec.suggested_time||'Not selected',disclosures:a.spec.campaign?.disclosures||[],qc:a.report.qc},null,2),card);
-if(d.can_approve)for(let [label,decision] of [['APPROVE','approved'],['REJECT','rejected'],['REQUEST CHANGES','changes_requested']]){let b=node('button',label,card);b.onclick=async()=>{try{await request('/api/decision','POST',{asset:a.id,decision,expected_sha:a.sha});document.querySelector('#notice').textContent='Decision saved. No upload performed.';await load();}catch(e){document.querySelector('#notice').textContent=e.message;}};}}
+let authorizePublish;if(a.production){let label=node('label','Authorize this exact version for private publication ',card);authorizePublish=document.createElement('input');authorizePublish.type='checkbox';label.append(authorizePublish);}
+if(d.can_approve)for(let [label,decision] of [['APPROVE','approved'],['REJECT','rejected'],['REQUEST CHANGES','changes_requested']]){let b=node('button',label,card);b.onclick=async()=>{try{await request(a.production?'/api/production-decision':'/api/decision','POST',{asset:a.id,decision,expected_sha:a.sha,publish_authorized:!!authorizePublish?.checked});document.querySelector('#notice').textContent='Decision saved. No upload performed.';await load();}catch(e){document.querySelector('#notice').textContent=e.message;}};}}
 }
 document.querySelector('#login').onsubmit=async e=>{e.preventDefault();try{await request('/session','POST',{credential:document.querySelector('#credential').value});document.querySelector('#credential').value='';await load();}catch(e){document.querySelector('#notice').textContent=e.message;}};
 load().catch(()=>{});
 </script></html>'''
 
 
-def server(store,users,port=0):
+def server(store,users,port=0,publication_gate=None):
     if not users:raise ValueError('Individual user credentials must be configured')
     if any(len(u.get('credential',''))<24 for u in users):raise ValueError('Use individual random credentials of at least 24 characters')
     sessions={}
@@ -65,6 +66,12 @@ def server(store,users,port=0):
                     for a in d['assets']:
                         directory=Path(a.pop('path'))
                         a['metadata']=read(directory/'metadata.json');a['report']=read(directory/'report.json');a['spec']=read(directory/'spec.json')
+                    if publication_gate:
+                        with publication_gate.connect() as c:
+                            for row in c.execute('SELECT * FROM publication_reviews'):
+                                directory=Path(row['path'])
+                                d['assets'].append({'id':row['id'],'production':True,'state':row['decision'],'sha':row['manifest'],'campaign':row['campaign'],
+                                    'metadata':read(directory/'metadata.json'),'report':read(directory/'report.json'),'spec':read(directory/'spec.json')})
                     d['identity']={k:p.get(k) for k in ('id','role','minor')}
                     d['can_approve']=p['role'] in {'OWNER','APPROVER'} and not p.get('minor')
                     d['csrf']=session['csrf']
@@ -72,6 +79,8 @@ def server(store,users,port=0):
                 if self.path.startswith('/media/'):
                     key=self.path.removeprefix('/media/')
                     with store.connect() as c:a=c.execute('SELECT path FROM assets WHERE id=?',(key,)).fetchone()
+                    if not a and publication_gate:
+                        with publication_gate.connect() as c:a=c.execute('SELECT path FROM publication_reviews WHERE id=?',(key,)).fetchone()
                     if not a:return self.send(404,{'error':'Unknown video'})
                     return self.send(200,(Path(a[0])/'video.mp4').read_bytes(),'video/mp4')
                 return self.send(404,{'error':'Unknown path'})
@@ -87,10 +96,14 @@ def server(store,users,port=0):
                     principal=next((u for u in users if isinstance(key,str) and hmac.compare_digest(key,u['credential'])),None)
                     if not principal:raise PermissionError('Invalid credential')
                     sid=secrets.token_urlsafe(32)
-                    sessions[sid]={'principal':{k:v for k,v in principal.items() if k!='credential'},'csrf':secrets.token_urlsafe(32),'expires':time.monotonic()+3600}
+                    sessions[sid]={'principal':{k:v for k,v in principal.items() if k!='credential'},'authenticated':publication_gate.auth.authenticate(key) if publication_gate else None,'csrf':secrets.token_urlsafe(32),'expires':time.monotonic()+3600}
                     return self.send(200,{'signed_in':True},headers={'Set-Cookie':f'orbit_session={sid}; HttpOnly; SameSite=Strict; Path=/; Max-Age=3600'})
                 session=self.identity()
                 if not hmac.compare_digest(self.headers.get('X-CSRF',''),session['csrf']):raise PermissionError('CSRF denied')
+                if self.path=='/api/production-decision':
+                    if not publication_gate:raise PermissionError('Publication authority is not configured')
+                    publication_gate.decide(data['asset'],session['authenticated'],data['decision'],data.get('publish_authorized') is True,data.get('expected_sha'))
+                    return self.send(200,{'decision':data['decision'],'uploaded':False})
                 if self.path=='/api/decision':
                     # Bind the UI submission to the version actually displayed, not a later revision.
                     with store.connect() as c:a=c.execute('SELECT sha FROM assets WHERE id=?',(data['asset'],)).fetchone()

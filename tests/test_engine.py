@@ -37,7 +37,7 @@ class Functional(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.out = Path(cls.temp.name)/'review'
-        cls.report = render(SPEC, cls.out)
+        cls.report = render(SPEC, cls.out, fixture=True)
 
     @classmethod
     def tearDownClass(cls): cls.temp.cleanup()

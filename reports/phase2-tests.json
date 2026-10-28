@@ -1,0 +1,17 @@
+{
+  "collected": 89,
+  "executed": 89,
+  "passed": 89,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "categories": {
+    "pure_unit_or_local_utility": 30,
+    "local_media": 33,
+    "mock_transport_or_identity_evidence": 26
+  },
+  "mock_dependent": 30,
+  "live_authorized_integration_tests": 0,
+  "creative_acceptance_tests": 0,
+  "note": "Local media tests use legal procedural fixtures and one pinned upstream natural-speech utterance, not a real campaign source."
+}

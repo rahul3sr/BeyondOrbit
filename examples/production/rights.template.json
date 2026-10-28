@@ -1,0 +1,22 @@
+{
+  "owner": "REQUIRED",
+  "source_sha256": "REQUIRED",
+  "source_url": null,
+  "document_reference": "/absolute/path/to/rights-document.txt",
+  "document_sha256": "REQUIRED",
+  "commercial_use": false,
+  "editing_allowed": false,
+  "audio_reuse": false,
+  "verified_by": "REQUIRED",
+  "verified_at": "REQUIRED ISO-8601 timezone timestamp",
+  "destinations": [
+    {
+      "platform": "youtube",
+      "channel_id": "REQUIRED actual UC channel ID",
+      "privacy": "private"
+    }
+  ],
+  "attribution": [],
+  "disclosures": [],
+  "fixture": false
+}

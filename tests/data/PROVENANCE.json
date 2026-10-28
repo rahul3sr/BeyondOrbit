@@ -1,0 +1,9 @@
+{
+  "source": "https://raw.githubusercontent.com/cmusphinx/pocketsphinx/v5.0.4/test/data/goforward.raw",
+  "version": "v5.0.4",
+  "sha256": "f15c60ec54059d8b66e410d0064945a0b0a04ea56e1ddca1958e493c0cf70e71",
+  "license": "upstream PocketSphinx BSD-style distribution license; retained alongside sample",
+  "format": "16000 Hz mono signed 16-bit little-endian PCM",
+  "reference": "go forward ten meters",
+  "use": "development ASR test only; not authorized campaign footage"
+}

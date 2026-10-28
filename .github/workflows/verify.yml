@@ -22,5 +22,7 @@ jobs:
           ffmpeg -version
       - name: Run security checks and tests without external credentials
         run: |
-          python3 scripts/security_check.py
-          python3 -m unittest discover -s tests -v
+          python3 -m venv .venv
+          .venv/bin/pip install --require-hashes -r requirements-asr.lock
+          .venv/bin/python scripts/security_check.py
+          .venv/bin/python scripts/run_checks.py
