@@ -1,3 +1,5 @@
+> Historical milestone-1 notes. Current implementation and limitations are in [architecture](architecture.md), [operating guide](operating-guide.md), and [status](../reports/status.json). Repository access through Git was later verified by a successful push; the API remains blocked.
+
 # Runtime and integration decisions
 
 Development works in Codex Cloud using Python 3.12 and system FFmpeg with libass. No pip packages or third-party skills were installed. Existing checkout is retained; no worktree is needed.

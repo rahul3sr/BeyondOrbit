@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily Beyond Orbit import (not installed or activated)
+[Timer]
+OnCalendar=*-*-* 14:00:00 UTC
+Persistent=true
+RandomizedDelaySec=600
+[Install]
+WantedBy=timers.target

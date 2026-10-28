@@ -1,0 +1,54 @@
+test_fixture_import_blocked (test_analytics.Evidence.test_fixture_import_blocked) ... ok
+test_forecasts_do_not_become_cash (test_analytics.Evidence.test_forecasts_do_not_become_cash) ... ok
+test_future_evidence_rejected (test_analytics.Evidence.test_future_evidence_rejected) ... ok
+test_approval_and_mutation (test_engine.Functional.test_approval_and_mutation) ... ok
+test_rejected_approval (test_engine.Functional.test_rejected_approval) ... ok
+test_render_decode_and_captions (test_engine.Functional.test_render_decode_and_captions) ... ok
+test_absent_script_rejected (test_engine.Gates.test_absent_script_rejected) ... ok
+test_missing_evidence_rejected (test_engine.Gates.test_missing_evidence_rejected) ... ok
+test_publishing_disabled (test_engine.Gates.test_publishing_disabled) ... ok
+test_scoring_is_explainable (test_engine.Gates.test_scoring_is_explainable) ... ok
+test_unknown_rights_rejected (test_engine.Gates.test_unknown_rights_rejected) ... ok
+test_budget_cap (test_operations.Campaigns.test_budget_cap) ... ok
+test_explicit_missing_field (test_operations.Campaigns.test_explicit_missing_field) ... ok
+test_financial_math_caps_fees_probability (test_operations.Campaigns.test_financial_math_caps_fees_probability) ... ok
+test_fixture_not_live_eligible (test_operations.Campaigns.test_fixture_not_live_eligible) ... ok
+test_nan_negative_unknown_terms (test_operations.Campaigns.test_nan_negative_unknown_terms) ... ok
+test_stale_evidence (test_operations.Campaigns.test_stale_evidence) ... ok
+test_unknown_rights_country_and_expiry (test_operations.Campaigns.test_unknown_rights_country_and_expiry) ... ok
+test_assumptions_and_relevance_change_rank (test_operations.Ranking.test_assumptions_and_relevance_change_rank) ... ok
+test_fixtures_not_ranked_as_real_opportunities (test_operations.Ranking.test_fixtures_not_ranked_as_real_opportunities) ... ok
+test_changed_terms_and_rejected_decision (test_operations.State.test_changed_terms_and_rejected_decision) ... ok
+test_changes_after_approval_and_queue (test_operations.State.test_changes_after_approval_and_queue) ... ok
+test_cost_limit (test_operations.State.test_cost_limit) ... ok
+test_daily_dedup_and_schedule (test_operations.State.test_daily_dedup_and_schedule) ... ok
+test_dashboard_no_invented_metrics (test_operations.State.test_dashboard_no_invented_metrics) ... ok
+test_global_duplicate_prevention (test_operations.State.test_global_duplicate_prevention) ... ok
+test_http_review_csrf_roles_and_preview (test_operations.State.test_http_review_csrf_roles_and_preview) ... ok
+test_import_dedup_and_material_revision (test_operations.State.test_import_dedup_and_material_revision) ... ok
+test_job_once_only (test_operations.State.test_job_once_only) ... ok
+test_live_adapter_blocked (test_operations.State.test_live_adapter_blocked) ... ok
+test_mock_platforms (test_operations.State.test_mock_platforms) ... ok
+test_pending_blocks (test_operations.State.test_pending_blocks) ... ok
+test_retry_revalidates_approval (test_operations.State.test_retry_revalidates_approval) ... ok
+test_roles_and_minors (test_operations.State.test_roles_and_minors) ... ok
+test_edit_and_chapters (test_operations.Vendor.test_edit_and_chapters) ... ok
+test_integrity_and_hook (test_operations.Vendor.test_integrity_and_hook) ... ok
+test_json_list_parser_quarantined (test_operations.Vendor.test_json_list_parser_quarantined) ... ok
+test_outliers (test_operations.Vendor.test_outliers) ... ok
+test_packaging (test_operations.Vendor.test_packaging) ... ok
+test_retention_percent_fixture (test_operations.Vendor.test_retention_percent_fixture) ... ok
+test_analytics_mock (test_protocol.OAuthProtocol.test_analytics_mock) ... ok
+test_credentials_permissions_and_no_overwrite (test_protocol.OAuthProtocol.test_credentials_permissions_and_no_overwrite) ... ok
+test_pkce_and_state_single_use (test_protocol.OAuthProtocol.test_pkce_and_state_single_use) ... ok
+test_private_resumable_upload_mock (test_protocol.OAuthProtocol.test_private_resumable_upload_mock) ... ok
+test_upload_redirect_exfiltration_rejected (test_protocol.OAuthProtocol.test_upload_redirect_exfiltration_rejected) ... ok
+test_clip_fixture_cannot_authorize_live (test_video.EndToEnd.test_clip_fixture_cannot_authorize_live) ... ok
+test_context_changes_are_bound (test_video.EndToEnd.test_context_changes_are_bound) ... ok
+test_demo_both_outputs_and_approval (test_video.EndToEnd.test_demo_both_outputs_and_approval) ... ok
+test_nonfinite_transcript (test_video.EndToEnd.test_nonfinite_transcript) ... ok
+
+----------------------------------------------------------------------
+Ran 49 tests in 14.796s
+
+OK

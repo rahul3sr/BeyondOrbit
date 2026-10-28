@@ -1,0 +1,26 @@
+{
+  "upstream": "https://github.com/Jakeschincariol/youtube-agent-skill",
+  "commit": "a2feb2104981a375ffd4f87ee04f4f5344ac43c6",
+  "license": "MIT",
+  "files": {
+    "LICENSE": "857c8d5276809c8196b3cd7cb3300324768bfc562b2b6281b06d6865058e186c",
+    "skills/yt-audit/SKILL.md": "a4d6583d9d8ef274bb589abd3c222330bcd5d731b1a05d921dd0d25b8b1ecb98",
+    "skills/yt-chapters/SKILL.md": "06d2fc094d59ec6da73d812bd7b21590f8099352922ea2e3151b45922bf315b3",
+    "skills/yt-chapters/chapters.py": "f21f17a74f0b2b6719bbf45b16bf404acb4fa639fc765df46b2aec442ab2dcbe",
+    "skills/yt-comment/SKILL.md": "5b569ef7564d9ca271fd158f0cdbd835073eacc887139c7d6d15899142d46892",
+    "skills/yt-edit/SKILL.md": "b9f83e8b972e91a4abb5e0f4f9fc4b5cde9e8727609ce1213b0e583718cd8aeb",
+    "skills/yt-edit/deadair.py": "61d13cd77e7c31e5e12b6e9e016c7d1ffb92d4a5ec5597dd69b98545c81eb9c3",
+    "skills/yt-package/SKILL.md": "0347a791664ff5d05eda87b2535e34ef8177c9e9b5e5c077c2f8113942108506",
+    "skills/yt-package/title.py": "e5f2ba4e205cc5d4bca9c8c0dd92890ea964158ee8266759e2c75c3958cef723",
+    "skills/yt-plan/SKILL.md": "c82983c91e69b1d816a978157dd1b3c37241611ad2a22463ad2c9291ca1b94cd",
+    "skills/yt-retention/SKILL.md": "2777dd1f8f9ea04174bf13c9dc0132be907fb3852380376db359bcf786ba4f8e",
+    "skills/yt-retention/retention.py": "2ed29f0bc24e7b65e9661a879692fe954b4f29e486ebf19f3c2c672e21b0a906",
+    "skills/yt-script/SKILL.md": "23fe2c4c52b4dbdae03295d71a8bdede254a94b3d6b0da83b025e8b622020366",
+    "skills/yt-script/hooks.json": "76c47b4ad410a8856c9d27aa489d7c447b3ebe30a9024f03e2d59fefe267f5cb",
+    "skills/yt-script/hookscore.py": "8205dca03de1d5d8e25614e7c0d8d40fd756a99b838320462195b342d5eb0545",
+    "skills/yt-seo/SKILL.md": "7ce49d03104f4f94698ba57a3ef7aa826b697cd01cbc95d7d18dca912287c046",
+    "skills/yt-shorts/SKILL.md": "cbaaaf907bb14491baba0ea23e3415f268f7fff21897c6eb487e7cb1113b32c8",
+    "skills/yt-viral/SKILL.md": "2dae2b23919464450e66dde15eaa0fd6d82dac4ca5c6c553d8bf2d604d38bdb4",
+    "skills/yt-viral/swipe.py": "8035c0868f66929d8b63dfa4997c8b1abc3ac29a19165ba17487242616cb0d96"
+  }
+}

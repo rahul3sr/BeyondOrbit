@@ -1,0 +1,12 @@
+[Unit]
+Description=Beyond Orbit authorized manual campaign import
+[Service]
+Type=oneshot
+User=beyond-orbit
+WorkingDirectory=/srv/beyond-orbit
+ExecStart=/usr/bin/python3 -m beyond_orbit.operations daily --db /var/lib/beyond-orbit/operations.sqlite --inbox /var/lib/beyond-orbit/inbox
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/beyond-orbit

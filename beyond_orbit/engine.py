@@ -36,7 +36,7 @@ def rights_check(spec):
             raise ValueError(f"Missing evidence: {kind}")
         if evidence["basis"] == "none" and kind != "audio":
             raise ValueError("Only audio may be absent")
-    if rights["visuals"]["basis"] != "original" or rights["audio"]["basis"] != "none":
+    if rights["visuals"]["basis"] != "original" or (rights["audio"]["basis"] != "none" and not (rights["audio"]["basis"] == "original" and spec.get("narration") is True)):
         raise ValueError("This renderer supports original graphics and no audio only")
     return {"status": "documented_pending_human_review", "evidence": rights,
             "legal_verification": False}
@@ -123,6 +123,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
            "ass=captions.ass",
            "-an", "-c:v", "libx264", "-preset", "veryfast", "-threads", "2", "-pix_fmt", "yuv420p",
            "-movflags", "+faststart", "video.mp4"]
+    if spec.get('narration'):
+        from .narration import narrate
+        narrate(scenes, step, out)
+        cmd = cmd[:cmd.index('-vf')] + ['-i', 'narration.wav'] + cmd[cmd.index('-vf'):]
+        cmd.remove('-an')
+        cmd[-1:-1] = ['-map', '0:v:0', '-map', '1:a:0', '-c:a', 'aac']
     subprocess.run(cmd, cwd=out, check=True, capture_output=True)
     metadata = {"title": spec["title"], "description": spec["description"],
                 "destination": {"platform": "youtube", "channel": "@BeyondOrbitVentures", "privacy": "private"}}
@@ -132,6 +138,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     report = {"rights": rights, "qc": qc(out / "video.mp4"), "hook": score(scenes[0]),
               "elapsed_seconds": round(time.monotonic()-started, 2), "external_api_cost_usd": 0,
               "infrastructure_cost_usd": None, "state": "awaiting_human_approval"}
+    if spec.get("narration"):
+        report["qc"]["audio"] = "Synthetic Flite narration, timed per original scene; human pronunciation review required"
     write(out / "report.json", report)
     write(out / "manifest.json", manifest(out))
     return report
@@ -141,7 +149,8 @@ BOUND_FILES = ("video.mp4", "captions.srt", "captions.ass", "metadata.json", "sp
 
 def manifest(out):
     out = Path(out)
-    hashes = {name: digest(out / name) for name in BOUND_FILES}
+    names = BOUND_FILES + tuple(n for n in ("context.json", "transcript.json") if (out/n).exists())
+    hashes = {name: digest(out / name) for name in names}
     encoded = json.dumps(hashes, sort_keys=True).encode()
     return {"sha256": hashlib.sha256(encoded).hexdigest(), "files": hashes}
 

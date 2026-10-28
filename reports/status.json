@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "milestone": "campaign production and human review",
+  "base_commit": "dac7a88ff01dde8003ec910577a60cfda9f2b539",
+  "branch": "feature/campaign-production-engine",
+  "readiness": "local_end_to_end_fixture_validated",
+  "tests": {
+    "passed": 49,
+    "failed": 0,
+    "command": "python3 -m unittest discover -s tests -v",
+    "http_tests_require_loopback": true
+  },
+  "security": {
+    "vendor_integrity": "passed",
+    "focused_secret_scan": "passed",
+    "full_vulnerability_audit": false
+  },
+  "capabilities": {
+    "campaigns": "authorized manual import; no live marketplace access",
+    "ranking": "eligibility-filtered scenario contribution estimates",
+    "original_video": "48 seconds with system Flite narration",
+    "campaign_clip": "32 seconds; original source; synthetic campaign",
+    "review": "loopback authenticated UI; roles, CSRF, exact-version gates",
+    "publishing": "mock only; no public uploads",
+    "scheduler": "local daily command tested; cloud definitions inactive",
+    "analytics": "manual evidence imports; live metrics unavailable"
+  },
+  "source_access": {
+    "contentrewards.com": "proxy denied",
+    "vyro.com": "proxy denied",
+    "api.github.com": "proxy denied",
+    "github.com_git": "read/write verified in preceding milestone"
+  },
+  "live_campaigns_verified": 0,
+  "actual_earnings_usd": null,
+  "cash_received_usd": null,
+  "cost": {
+    "external_api_usd": 0,
+    "new_paid_services": 0,
+    "compute_usd": null,
+    "monthly_hosting_usd": null
+  },
+  "deployments": {
+    "hosted_runtime": false,
+    "hosted_review": false,
+    "ci_dispatched": false,
+    "environment_publication_attempted": false
+  },
+  "unverified": [
+    "live source discovery",
+    "automatic ASR",
+    "Higgsfield API entitlement",
+    "official Google authorization",
+    "real private uploads",
+    "permanent hosted execution"
+  ],
+  "toolchain": {
+    "python": "3.12.14",
+    "ffmpeg": "ffmpeg version 7.1.5-0+deb13u1 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "artifacts": {
+    "original": "artifacts/business-demo-v2/original/video.mp4",
+    "clip": "artifacts/business-demo-v2/campaign-clip/video.mp4",
+    "status": "artifacts/business-demo-v2/status.json"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "mode": "authorized manual import",
+  "sources": [
+    {"name":"ContentRewards", "url":"https://contentrewards.com/c/discover", "access":"proxy denied", "live_campaigns_verified":false},
+    {"name":"Vyro", "url":"https://vyro.com", "access":"proxy denied", "live_campaigns_verified":false}
+  ],
+  "other_marketplaces": {"status":"unverified", "note":"No additional marketplace reputation, payout or live availability verified. Import direct owner terms after authorized access."},
+  "automatic_scraping": false,
+  "directory_listing_is_proof": false
+}

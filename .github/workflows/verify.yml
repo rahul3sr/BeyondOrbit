@@ -1,0 +1,26 @@
+name: Verify offline engine
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: beyond-orbit-verification
+  cancel-in-progress: false
+jobs:
+  test:
+    # Must remain unset until owner confirms billing/free allowance and authorizes execution.
+    if: ${{ vars.BEYOND_ORBIT_CI_AUTHORIZED == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Prepare system media tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes ffmpeg fonts-dejavu-core
+          python3 --version
+          ffmpeg -version
+      - name: Run security checks and tests without external credentials
+        run: |
+          python3 scripts/security_check.py
+          python3 -m unittest discover -s tests -v

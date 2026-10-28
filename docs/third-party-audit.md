@@ -40,3 +40,7 @@ Claude Code is not required to run the Python utilities. Prompt skills can be ad
 ## Recommendation requiring user approval
 
 Approve a pinned project-local copy of the six utilities plus hooks.json and MIT license, followed by isolated fixture tests and fixes in a clearly attributed adapter. Do not install the entire pack globally. Prompt-only components can be adapted selectively after voice and editorial conventions are chosen. This recommendation does not include editing, publishing, hosting or rights verification capability.
+
+## Authorized integration update
+
+The master directive explicitly authorized isolated testing of the previously audited utilities. The pinned source and MIT license are now stored in vendor/youtube-agent-skill with per-file SHA-256 provenance. No installer was run. All six Python CLIs passed isolated synthetic-input tests. First-party wrappers merge overlapping EDL ranges and reject unsupported JSON-list transcripts. Retention is tested only on an explicit percentage-axis fixture; its ambiguous-axis heuristic is not approved for general analytics. Prompt-only skills were adapted as explicit project-local task definitions; upstream prompts are audit material and are not automatically loaded as runtime instructions. Claude Code is not required by the tested Python commands.
