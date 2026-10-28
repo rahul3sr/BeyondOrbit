@@ -2,7 +2,19 @@
 
 A working local campaign-to-video and original-video engine with version-bound human review and mock-only publishing. This extends the preserved offline prototype; it is not a live monetized or continuously running service.
 
-## Verified workflow
+## Creative quality
+
+The original text-and-Flite videos are technical fixtures, not acceptable finished Shorts. Automated decode/QC checks do not certify creative quality. Robotic speech is not an approved production voice.
+
+A separate visual-proof renderer now supports six original storyboard scenes, camera motion, concise editorial text and original sound design, with no robotic narration:
+
+```bash
+python3 -m beyond_orbit.cinematic PATH_TO_ORIGINAL_3_BY_2_STORYBOARD.png --out artifacts/NEW_VISUAL_PROOF
+```
+
+This animates still artwork; it is not full generative video. A natural voiceover still needs an authorized voice service or a human recording. The current rebuilt artifact is `artifacts/creative-rebuild-v1/video.mp4` (kept outside Git).
+
+## Verified technical workflow
 
 ```bash
 python3 -m unittest discover -s tests -v

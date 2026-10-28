@@ -17,3 +17,5 @@ Keep forecast, accrued earnings and received cash separate. Missing analytics ar
 Review runs locally with individual credentials in BEYOND_ORBIT_USERS, never committed. Children cannot approve publications.
 Only mock adapters may enter the job worker. No paid cloud resources or scheduled Actions execution without billing authorization.
 Run python3 -m unittest discover -s tests -v and python3 scripts/security_check.py before pushing.
+
+Creative quality matters independently of passing media tests. Do not present blank-background text videos or Flite robot speech as finished content. Use actual rights-cleared visuals, purposeful editing and human-reviewed narration. Label technical fixtures and still-image motion proofs accurately. Never infer creative acceptance from an FFmpeg decode test.
