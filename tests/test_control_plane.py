@@ -82,6 +82,24 @@ class IntakeTests(unittest.TestCase):
         job["disclosures"] = ["#ad"]
         self.assertTrue(evaluate_intake(job).allowed)
 
+    def test_expired_rights_are_blocked(self):
+        job = owned_job()
+        job["rights"]["expires_at"] = "2025-01-01T00:00:00+00:00"
+        self.assertIn("rights grant has expired", evaluate_intake(job).blockers)
+
+    def test_campaign_fingerprint_is_exact_hash(self):
+        job = owned_job()
+        job["track"] = "campaign_clip"
+        job["rights"].update(basis="campaign_license", campaign_supplied=True)
+        job["campaign"] = {
+            "id": "campaign-123",
+            "brief_url": "https://contentrewards.example/campaign-123",
+            "brief_fingerprint": "not-a-hash",
+            "submission_deadline": "2026-11-20T23:59:00-06:00",
+        }
+        job["disclosures"] = ["#ad"]
+        self.assertFalse(evaluate_intake(job).allowed)
+
     def test_kids_track_is_separate_and_reviewed(self):
         job = owned_job()
         job["track"] = "kids_animation"

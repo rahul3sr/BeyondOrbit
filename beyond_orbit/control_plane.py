@@ -77,6 +77,12 @@ def _valid_iso8601(value: Any) -> bool:
     return parsed.tzinfo is not None
 
 
+def _sha256(value: Any) -> bool:
+    if not isinstance(value, str) or len(value) != 64:
+        return False
+    return all(character in "0123456789abcdef" for character in value.lower())
+
+
 def artifact_digest(video_path: Path, metadata: Mapping[str, Any]) -> str:
     """Bind approval to exact video bytes and exact metadata."""
     path = Path(video_path)
@@ -104,7 +110,7 @@ def approve(kind: str, digest: str, reviewer: str, at: Optional[str] = None) -> 
     """Create a local audit record; this is not identity authentication."""
     if kind not in APPROVAL_KINDS:
         raise ValueError("approval kind must be creative or publish")
-    if not _nonempty(digest) or len(digest) != 64:
+    if not _sha256(digest):
         raise ValueError("approval must bind a SHA-256 digest")
     if not _nonempty(reviewer):
         raise ValueError("reviewer is required")
@@ -155,6 +161,11 @@ def evaluate_intake(job: Mapping[str, Any]) -> GateDecision:
         blockers.append("rights scope is required")
     if not _valid_iso8601(rights.get("checked_at")):
         blockers.append("rights verification timestamp with timezone is required")
+    if rights.get("expires_at") is not None:
+        if not _valid_iso8601(rights.get("expires_at")):
+            blockers.append("rights expiry must include a timezone")
+        elif datetime.fromisoformat(rights["expires_at"].replace("Z", "+00:00")) <= datetime.now(timezone.utc):
+            blockers.append("rights grant has expired")
 
     if not isinstance(destinations, list) or not destinations:
         blockers.append("at least one destination is required")
@@ -169,9 +180,15 @@ def evaluate_intake(job: Mapping[str, Any]) -> GateDecision:
 
     if track == "campaign_clip":
         campaign = job.get("campaign") if isinstance(job.get("campaign"), Mapping) else {}
-        for field in ("id", "brief_fingerprint", "submission_deadline"):
+        for field in ("id",):
             if not _nonempty(campaign.get(field)):
                 blockers.append("campaign %s is required" % field)
+        if not _sha256(campaign.get("brief_fingerprint")):
+            blockers.append("campaign brief_fingerprint must be a SHA-256 digest")
+        if not _valid_iso8601(campaign.get("submission_deadline")):
+            blockers.append("campaign submission_deadline must include a timezone")
+        elif datetime.fromisoformat(campaign["submission_deadline"].replace("Z", "+00:00")) <= datetime.now(timezone.utc):
+            blockers.append("campaign submission deadline has passed")
         if not _https_url(campaign.get("brief_url")):
             blockers.append("direct campaign brief URL is required")
         if rights.get("basis") != "campaign_license":

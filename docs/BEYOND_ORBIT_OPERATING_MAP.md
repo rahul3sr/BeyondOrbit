@@ -87,7 +87,7 @@ No production tool is allowed to bypass the rights, approval, or finance systems
 
 ### PeakCut audit conclusion
 
-PeakCut is a genuine MIT-licensed project with Python, FFmpeg, `yt-dlp`, local speech-to-text, multiple AI providers, account workspaces, posting queues, and tests. It reads its AI credential from an ignored data store or environment configuration. It does **not** mean a key should be pasted into source code. The repository was created only four days before this decision and had roughly 14 commits when reviewed, so it remains an isolated trial dependency until pinned, scanned, and tested.
+PeakCut is a genuine MIT-licensed project with Python, FFmpeg, `yt-dlp`, local speech-to-text, multiple AI providers, account workspaces, posting queues, and tests. It reads its AI credential from an ignored data store or environment configuration. It does **not** mean a key should be pasted into source code. The repository was created only three days before this decision and had roughly 14 commits when reviewed, so it remains an isolated trial dependency until pinned, scanned, and tested.
 
 PeakCut’s current design sends a local transcript and selected context to the configured chat model. Gemini separately supports direct public-YouTube-URL analysis, but that is a distinct Google API capability and should be benchmarked explicitly rather than assumed to be PeakCut’s behavior.
 
