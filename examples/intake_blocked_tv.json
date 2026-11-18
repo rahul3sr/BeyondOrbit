@@ -1,0 +1,22 @@
+{
+  "job_id": "bo-blocked-tv-001",
+  "track": "campaign_clip",
+  "source": {
+    "url": "https://drive.google.com/example-full-episode",
+    "owner": "Unknown",
+    "type": "netflix",
+    "storage": "google_drive"
+  },
+  "rights": {
+    "basis": "unknown",
+    "commercial_use": false,
+    "campaign_supplied": false,
+    "evidence_url": "",
+    "scope": "",
+    "checked_at": ""
+  },
+  "audio": {"basis": "unknown"},
+  "destinations": ["youtube", "instagram", "tiktok"],
+  "campaign": {},
+  "disclosures": []
+}

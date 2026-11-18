@@ -1,0 +1,22 @@
+{
+  "job_id": "bo-original-001",
+  "track": "owned_ai_explainer",
+  "source": {
+    "url": "https://beyond-orbit.example/assets/original-script-001",
+    "owner": "Beyond Orbit",
+    "type": "original_script",
+    "storage": "local"
+  },
+  "rights": {
+    "basis": "owned",
+    "commercial_use": true,
+    "campaign_supplied": false,
+    "evidence_url": "https://beyond-orbit.example/rights/original-001",
+    "scope": "All Beyond Orbit social accounts",
+    "checked_at": "2026-11-17T19:00:00-06:00"
+  },
+  "audio": {"basis": "none"},
+  "destinations": ["youtube", "instagram", "tiktok"],
+  "reference_video_mode": "analysis_only",
+  "disclosures": []
+}
